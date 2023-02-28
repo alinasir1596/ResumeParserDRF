@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  web:
+    build: ./
+    command: gunicorn core.wsgi:application --bind 0.0.0.0:1500
+    expose:
+      - 1500
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+  db:
+    image: postgres:13.0
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.db
+  nginx:
+    build: ./nginx
+    ports:
+      - 1500:1501
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
